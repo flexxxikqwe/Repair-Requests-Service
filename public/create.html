@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Repair Request</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .premium-input {
+            background-color: #ffffff;
+            border: 1px solid #E2E8F0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .premium-input:focus {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+            outline: none;
+            transform: translateY(-1px);
+        }
+        .premium-shadow {
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 12px 24px -4px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-[#FBFBFC] text-[#1A1C1E] min-h-screen flex flex-col items-center justify-center p-6">
+    <div class="w-full max-w-xl">
+        <div class="flex items-center gap-5 mb-12">
+            <a href="/" class="group p-3 rounded-2xl hover:bg-white hover:shadow-sm transition-all text-[#64748B] hover:text-[#0F172A] border border-transparent hover:border-[#E2E8F0]">
+                <i data-lucide="arrow-left" class="w-5 h-5 group-hover:-translate-x-1 transition-transform"></i>
+            </a>
+            <div>
+                <h1 class="text-3xl font-extrabold text-[#0F172A] tracking-tight">New Request</h1>
+                <p class="text-[15px] text-[#64748B] font-medium opacity-80 mt-1">Schedule a technician for your repair needs.</p>
+            </div>
+        </div>
+
+        <div class="bg-white p-12 rounded-3xl premium-shadow border border-[#E2E8F0] relative overflow-hidden">
+            <form id="requestForm" class="space-y-10">
+                <div class="grid gap-10">
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-extrabold text-[#64748B] uppercase tracking-[0.2em] ml-1 opacity-60">Full Name</label>
+                        <input type="text" id="clientName" placeholder="e.g. John Doe" required class="w-full px-6 py-4.5 premium-input rounded-2xl outline-none placeholder:text-[#64748B]/30 font-semibold text-[15px]">
+                    </div>
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-extrabold text-[#64748B] uppercase tracking-[0.2em] ml-1 opacity-60">Phone Number</label>
+                        <input type="tel" id="phone" placeholder="+1 (555) 000-0000" required class="w-full px-6 py-4.5 premium-input rounded-2xl outline-none placeholder:text-[#64748B]/30 font-semibold text-[15px]">
+                    </div>
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-extrabold text-[#64748B] uppercase tracking-[0.2em] ml-1 opacity-60">Service Address</label>
+                        <input type="text" id="address" placeholder="123 Maple St, Springfield" required class="w-full px-6 py-4.5 premium-input rounded-2xl outline-none placeholder:text-[#64748B]/30 font-semibold text-[15px]">
+                    </div>
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-extrabold text-[#64748B] uppercase tracking-[0.2em] ml-1 opacity-60">Problem Description</label>
+                        <textarea id="problemText" placeholder="Please describe the issue in detail..." required rows="4" class="w-full px-6 py-4.5 premium-input rounded-2xl outline-none placeholder:text-[#64748B]/30 font-semibold text-[15px] resize-none leading-relaxed"></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-[#2563EB] text-white py-5 rounded-2xl font-bold hover:bg-[#1d4ed8] active:scale-[0.98] transition-all duration-300 shadow-2xl shadow-blue-500/10 flex items-center justify-center gap-3 text-[17px]">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                    Submit Request
+                </button>
+            </form>
+
+            <!-- Success Overlay -->
+            <div id="successOverlay" class="absolute inset-0 bg-white flex flex-col items-center justify-center p-12 text-center translate-y-full transition-transform duration-1000 cubic-bezier(0.16, 1, 0.3, 1) z-10">
+                <div class="w-24 h-24 bg-emerald-50 rounded-[32px] flex items-center justify-center mb-10 text-emerald-600 border border-emerald-100 shadow-sm">
+                    <i data-lucide="check-circle" class="w-12 h-12"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-[#0F172A] mb-4 tracking-tight">Request Received</h2>
+                <p class="text-[16px] text-[#64748B] mb-12 leading-relaxed font-medium opacity-80 max-w-sm">Your repair request has been submitted successfully. Our dispatch team will assign a technician shortly.</p>
+                <button onclick="resetForm()" class="bg-[#0F172A] text-white px-12 py-4.5 rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-xl hover:shadow-2xl active:scale-95">
+                    Submit Another
+                </button>
+            </div>
+        </div>
+
+        <p class="mt-16 text-center text-[13px] text-[#64748B] font-bold uppercase tracking-[0.15em] opacity-40">
+            Need immediate assistance? <a href="#" class="text-[#2563EB] hover:underline">Contact Support</a>
+        </p>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        lucide.createIcons();
+
+        const form = document.getElementById('requestForm');
+        const overlay = document.getElementById('successOverlay');
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalContent = btn.innerHTML;
+            
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin text-white/50"></i> Processing...';
+            btn.disabled = true;
+            lucide.createIcons();
+
+            const data = {
+                clientName: document.getElementById('clientName').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                problemText: document.getElementById('problemText').value
+            };
+
+            try {
+                await API.createRequest(data);
+                overlay.classList.remove('translate-y-full');
+            } catch (err) {
+                btn.innerHTML = '<i data-lucide="alert-circle" class="w-5 h-5"></i> Submission Failed';
+                btn.classList.replace('bg-[#2563EB]', 'bg-red-600');
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.classList.replace('bg-red-600', 'bg-[#2563EB]');
+                    btn.disabled = false;
+                    lucide.createIcons();
+                }, 2000);
+            }
+        };
+
+        function resetForm() {
+            overlay.classList.add('translate-y-full');
+            form.reset();
+            const btn = form.querySelector('button');
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="send" class="w-5 h-5"></i> Submit Request';
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

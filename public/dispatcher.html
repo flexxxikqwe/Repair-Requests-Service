@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dispatcher Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .premium-shadow {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #F8FAFC;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #E2E8F0;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #CBD5E1;
+        }
+    </style>
+</head>
+<body class="bg-[#FBFBFC] text-[#1A1C1E] min-h-screen flex flex-col">
+    <!-- Top Navigation -->
+    <nav class="bg-white border-b border-[#E2E8F0] px-10 py-0 sticky top-0 z-30">
+        <div class="max-w-[1600px] mx-auto flex justify-between items-center h-16">
+            <div class="flex items-center gap-10 h-full">
+                <a href="/" class="flex items-center gap-2.5 font-bold text-lg tracking-tight">
+                    <div class="w-8 h-8 rounded-lg bg-[#2563EB] text-white flex items-center justify-center shadow-lg shadow-blue-500/20">
+                        <i data-lucide="wrench" class="w-4 h-4"></i>
+                    </div>
+                    <span>RepairHub</span>
+                </a>
+                <div class="flex gap-8 h-full text-[13px] font-semibold text-[#64748B]">
+                    <a href="/dispatcher.html" class="flex items-center text-[#0F172A] border-b-2 border-[#2563EB] px-1 transition-all">Requests</a>
+                    <a href="#" class="flex items-center hover:text-[#0F172A] px-1 transition-all">Masters</a>
+                    <a href="#" class="flex items-center hover:text-[#0F172A] px-1 transition-all">Analytics</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="relative group">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B] group-focus-within:text-[#2563EB] transition-colors"></i>
+                    <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 bg-[#F1F5F9] border border-transparent rounded-xl text-sm outline-none focus:bg-white focus:border-[#2563EB]/20 focus:ring-4 focus:ring-[#2563EB]/5 transition-all w-64">
+                </div>
+                <div class="h-6 w-px bg-[#E2E8F0]"></div>
+                <button class="relative p-2 rounded-xl hover:bg-[#F1F5F9] transition-all text-[#64748B] hover:text-[#0F172A]">
+                    <i data-lucide="bell" class="w-5 h-5"></i>
+                    <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                </button>
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 border-2 border-white shadow-sm"></div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-[1600px] w-full mx-auto p-10 flex-1">
+        <div class="flex justify-between items-end mb-12">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-[#0F172A] mb-2.5">Service Requests</h1>
+                <p class="text-[#64748B] font-medium opacity-80">Oversee operations and maintain service quality standards.</p>
+            </div>
+            <div class="flex gap-4">
+                <div class="flex bg-white border border-[#E2E8F0] rounded-xl p-1 shadow-sm">
+                    <select id="statusFilter" onchange="loadRequests()" class="bg-transparent px-4 py-2 text-[13px] font-bold outline-none cursor-pointer text-[#0F172A]">
+                        <option value="">All Statuses</option>
+                        <option value="new">New</option>
+                        <option value="assigned">Assigned</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="done">Done</option>
+                        <option value="canceled">Canceled</option>
+                    </select>
+                </div>
+                <a href="/create.html" class="bg-[#2563EB] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#1d4ed8] transition-all shadow-xl shadow-blue-500/10 flex items-center gap-2.5">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    New Request
+                </a>
+            </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="bg-white rounded-2xl shadow-[0_1px_3px_0_rgba(0,0,0,0.02),0_12px_24px_-4px_rgba(0,0,0,0.04)] border border-[#E2E8F0] overflow-hidden relative min-h-[500px]">
+            <!-- Loading Overlay -->
+            <div id="loadingState" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-20 flex items-center justify-center hidden transition-opacity duration-300">
+                <div class="flex flex-col items-center gap-4">
+                    <div class="w-12 h-12 border-[3px] border-[#2563EB]/10 border-t-[#2563EB] rounded-full animate-spin"></div>
+                    <p class="text-xs font-bold text-[#64748B] uppercase tracking-widest">Refreshing data</p>
+                </div>
+            </div>
+
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-[#FBFBFC] border-b border-[#E2E8F0]">
+                        <th class="px-10 py-5 text-[10px] font-bold text-[#64748B] uppercase tracking-[0.15em]">ID</th>
+                        <th class="px-10 py-5 text-[10px] font-bold text-[#64748B] uppercase tracking-[0.15em]">Client</th>
+                        <th class="px-10 py-5 text-[10px] font-bold text-[#64748B] uppercase tracking-[0.15em]">Problem Details</th>
+                        <th class="px-10 py-5 text-[10px] font-bold text-[#64748B] uppercase tracking-[0.15em]">Status</th>
+                        <th class="px-10 py-5 text-[10px] font-bold text-[#64748B] uppercase tracking-[0.15em]">Assignment</th>
+                        <th class="px-10 py-5 text-[10px] font-bold text-[#64748B] uppercase tracking-[0.15em] text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="requestTable" class="divide-y divide-[#F1F5F9]">
+                    <!-- Rows injected here -->
+                </tbody>
+            </table>
+            <div id="emptyState" class="hidden py-40 text-center">
+                <div class="w-24 h-24 bg-[#F8FAFC] rounded-3xl flex items-center justify-center mx-auto mb-8 text-[#64748B]/10 border border-[#E2E8F0]">
+                    <i data-lucide="inbox" class="w-12 h-12"></i>
+                </div>
+                <h3 class="text-xl font-bold text-[#0F172A] mb-2 tracking-tight">No requests found</h3>
+                <p class="text-[#64748B] max-w-xs mx-auto font-medium opacity-70">Adjust your filters or create a new service request to populate this view.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Assign Modal -->
+    <div id="assignModal" class="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all border border-[#E2E8F0]">
+            <div class="p-10">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-[#0F172A] tracking-tight">Assign Technician</h2>
+                        <p class="text-sm text-[#64748B] font-medium mt-1">Select a master for request <span id="modalRequestId" class="font-mono font-bold text-[#2563EB]"></span></p>
+                    </div>
+                    <button onclick="hideAssignModal()" class="p-2 rounded-xl hover:bg-[#F1F5F9] transition-all text-[#64748B]">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-2.5 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar" id="masterList">
+                    <!-- Masters injected here -->
+                </div>
+            </div>
+            <div class="bg-[#FBFBFC] p-8 flex justify-end gap-3 border-t border-[#E2E8F0]">
+                <button onclick="hideAssignModal()" class="px-8 py-3.5 rounded-xl font-bold text-[#64748B] hover:bg-[#E2E8F0] transition-all text-sm">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        lucide.createIcons();
+
+        let currentRequestId = null;
+
+        function getStatusStyles(status) {
+            switch(status) {
+                case 'new': return 'bg-slate-100 text-slate-600 border border-slate-200';
+                case 'assigned': return 'bg-blue-50 text-blue-600 border border-blue-100';
+                case 'in_progress': return 'bg-orange-50 text-orange-600 border border-orange-100';
+                case 'done': return 'bg-emerald-50 text-emerald-600 border border-emerald-100';
+                case 'canceled': return 'bg-red-50 text-red-600 border border-red-100';
+                default: return 'bg-slate-50 text-[#64748B]';
+            }
+        }
+
+        async function loadRequests() {
+            const loading = document.getElementById('loadingState');
+            loading.classList.remove('hidden');
+            
+            const status = document.getElementById('statusFilter').value;
+            const requests = await API.getRequests(status);
+            const tbody = document.getElementById('requestTable');
+            const emptyState = document.getElementById('emptyState');
+
+            loading.classList.add('hidden');
+
+            if (requests.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            tbody.innerHTML = requests.map(req => `
+                <tr class="hover:bg-[#FBFBFC] transition-all group cursor-default">
+                    <td class="px-10 py-7 text-xs font-mono font-bold text-[#64748B] opacity-60">#${req.id}</td>
+                    <td class="px-10 py-7">
+                        <div class="font-bold text-[#0F172A] text-[15px] tracking-tight">${req.clientName}</div>
+                        <div class="text-xs text-[#64748B] mt-1 flex items-center gap-2 font-medium opacity-80">
+                            <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+                            ${req.phone}
+                        </div>
+                    </td>
+                    <td class="px-10 py-7">
+                        <div class="text-[14px] text-[#0F172A] max-w-xs truncate font-bold tracking-tight">${req.problemText}</div>
+                        <div class="text-[12px] text-[#64748B] mt-1.5 flex items-center gap-2 font-medium opacity-70">
+                            <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+                            ${req.address}
+                        </div>
+                    </td>
+                    <td class="px-10 py-7">
+                        <span class="px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-[0.1em] ${getStatusStyles(req.status)}">
+                            ${req.status.replace('_', ' ')}
+                        </span>
+                    </td>
+                    <td class="px-10 py-7">
+                        ${req.masterName ? `
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-xs font-bold text-[#2563EB] border border-[#E2E8F0] shadow-sm">
+                                    ${req.masterName.charAt(0).toUpperCase()}
+                                </div>
+                                <span class="text-[14px] font-bold text-[#0F172A] tracking-tight">${req.masterName}</span>
+                            </div>
+                        ` : `
+                            <div class="flex items-center gap-2.5 text-[#64748B]/30">
+                                <i data-lucide="user-minus" class="w-4.5 h-4.5"></i>
+                                <span class="text-xs font-bold uppercase tracking-widest italic">Pending</span>
+                            </div>
+                        `}
+                    </td>
+                    <td class="px-10 py-7 text-right">
+                        <div class="flex justify-end gap-2.5 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                            ${(req.status === 'new' || req.status === 'assigned') ? `
+                                <button onclick="showAssignModal(${req.id})" class="p-3 rounded-xl bg-white text-[#2563EB] hover:bg-[#2563EB] hover:text-white transition-all border border-[#E2E8F0] hover:border-[#2563EB] shadow-sm" title="Assign">
+                                    <i data-lucide="user-plus" class="w-4.5 h-4.5"></i>
+                                </button>
+                            ` : ''}
+                            ${req.status !== 'done' && req.status !== 'canceled' ? `
+                                <button onclick="cancelRequest(${req.id})" class="p-3 rounded-xl bg-white text-red-600 hover:bg-red-600 hover:text-white transition-all border border-[#E2E8F0] hover:border-red-600 shadow-sm" title="Cancel">
+                                    <i data-lucide="x-circle" class="w-4.5 h-4.5"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        async function showAssignModal(id) {
+            currentRequestId = id;
+            document.getElementById('modalRequestId').innerText = `#${id}`;
+            const masters = await API.getUsers('master');
+            const list = document.getElementById('masterList');
+            
+            if (masters.length === 0) {
+                list.innerHTML = '<p class="text-[#64748B] italic py-4">No masters available.</p>';
+            } else {
+                list.innerHTML = masters.map(m => `
+                    <button onclick="assignTo(${m.id})" class="w-full flex items-center gap-5 p-5 rounded-2xl border border-[#E2E8F0] hover:border-[#2563EB]/40 hover:bg-blue-50/20 transition-all group text-left">
+                        <div class="w-12 h-12 rounded-xl bg-[#F8FAFC] flex items-center justify-center font-extrabold text-[#64748B] group-hover:bg-[#2563EB] group-hover:text-white transition-all border border-[#E2E8F0] group-hover:border-[#2563EB] shadow-sm">
+                            ${m.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-bold text-[#0F172A] text-[15px] tracking-tight">${m.name}</div>
+                            <div class="text-[11px] text-[#64748B] font-bold uppercase tracking-widest opacity-60">Technician ID: ${m.id}</div>
+                        </div>
+                        <i data-lucide="arrow-right" class="w-5 h-5 text-[#64748B]/20 group-hover:text-[#2563EB] group-hover:translate-x-1 transition-all"></i>
+                    </button>
+                `).join('');
+            }
+            
+            document.getElementById('assignModal').classList.remove('hidden');
+            document.getElementById('assignModal').classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function hideAssignModal() {
+            document.getElementById('assignModal').classList.add('hidden');
+            document.getElementById('assignModal').classList.remove('flex');
+            currentRequestId = null;
+        }
+
+        async function assignTo(masterId) {
+            if (currentRequestId && masterId) {
+                await API.assignRequest(currentRequestId, masterId);
+                hideAssignModal();
+                loadRequests();
+            }
+        }
+
+        async function cancelRequest(id) {
+            if (confirm('Are you sure you want to cancel this request?')) {
+                await API.cancelRequest(id);
+                loadRequests();
+            }
+        }
+
+        loadRequests();
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "name": "Repair Requests Service",
+  "description": "A minimal repair request management system for dispatchers and masters.",
+  "requestFramePermissions": []
+}
