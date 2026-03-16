@@ -8,8 +8,9 @@ const API = {
         return res.json();
     },
 
-    async getRequests(status = '') {
-        const res = await fetch(`/requests${status ? `?status=${status}` : ''}`);
+    async getRequests(params = {}) {
+        const query = new URLSearchParams(params).toString();
+        const res = await fetch(`/requests${query ? `?${query}` : ''}`);
         return res.json();
     },
 

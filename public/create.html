@@ -43,23 +43,23 @@
         </div>
 
         <div class="bg-white p-12 rounded-3xl premium-shadow border border-[#E2E8F0] relative overflow-hidden">
-            <form id="requestForm" class="space-y-10">
+            <form id="requestForm" action="/requests" method="POST" class="space-y-10">
                 <div class="grid gap-10">
                     <div class="space-y-3">
                         <label class="text-[11px] font-extrabold text-[#64748B] uppercase tracking-[0.2em] ml-1 opacity-60">Full Name</label>
-                        <input type="text" id="clientName" placeholder="e.g. John Doe" required class="w-full px-6 py-4.5 premium-input rounded-2xl outline-none placeholder:text-[#64748B]/30 font-semibold text-[15px]">
+                        <input type="text" name="clientName" id="clientName" placeholder="e.g. John Doe" required class="w-full px-6 py-4.5 premium-input rounded-2xl outline-none placeholder:text-[#64748B]/30 font-semibold text-[15px]">
                     </div>
                     <div class="space-y-3">
                         <label class="text-[11px] font-extrabold text-[#64748B] uppercase tracking-[0.2em] ml-1 opacity-60">Phone Number</label>
-                        <input type="tel" id="phone" placeholder="+1 (555) 000-0000" required class="w-full px-6 py-4.5 premium-input rounded-2xl outline-none placeholder:text-[#64748B]/30 font-semibold text-[15px]">
+                        <input type="tel" name="phone" id="phone" placeholder="+1 (555) 000-0000" required class="w-full px-6 py-4.5 premium-input rounded-2xl outline-none placeholder:text-[#64748B]/30 font-semibold text-[15px]">
                     </div>
                     <div class="space-y-3">
                         <label class="text-[11px] font-extrabold text-[#64748B] uppercase tracking-[0.2em] ml-1 opacity-60">Service Address</label>
-                        <input type="text" id="address" placeholder="123 Maple St, Springfield" required class="w-full px-6 py-4.5 premium-input rounded-2xl outline-none placeholder:text-[#64748B]/30 font-semibold text-[15px]">
+                        <input type="text" name="address" id="address" placeholder="123 Maple St, Springfield" required class="w-full px-6 py-4.5 premium-input rounded-2xl outline-none placeholder:text-[#64748B]/30 font-semibold text-[15px]">
                     </div>
                     <div class="space-y-3">
                         <label class="text-[11px] font-extrabold text-[#64748B] uppercase tracking-[0.2em] ml-1 opacity-60">Problem Description</label>
-                        <textarea id="problemText" placeholder="Please describe the issue in detail..." required rows="4" class="w-full px-6 py-4.5 premium-input rounded-2xl outline-none placeholder:text-[#64748B]/30 font-semibold text-[15px] resize-none leading-relaxed"></textarea>
+                        <textarea name="problemText" id="problemText" placeholder="Please describe the issue in detail..." required rows="4" class="w-full px-6 py-4.5 premium-input rounded-2xl outline-none placeholder:text-[#64748B]/30 font-semibold text-[15px] resize-none leading-relaxed"></textarea>
                     </div>
                 </div>
                 <button type="submit" class="w-full bg-[#2563EB] text-white py-5 rounded-2xl font-bold hover:bg-[#1d4ed8] active:scale-[0.98] transition-all duration-300 shadow-2xl shadow-blue-500/10 flex items-center justify-center gap-3 text-[17px]">
@@ -75,14 +75,19 @@
                 </div>
                 <h2 class="text-3xl font-extrabold text-[#0F172A] mb-4 tracking-tight">Request Received</h2>
                 <p class="text-[16px] text-[#64748B] mb-12 leading-relaxed font-medium opacity-80 max-w-sm">Your repair request has been submitted successfully. Our dispatch team will assign a technician shortly.</p>
-                <button onclick="resetForm()" class="bg-[#0F172A] text-white px-12 py-4.5 rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-xl hover:shadow-2xl active:scale-95">
-                    Submit Another
-                </button>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button id="resetFormBtn" class="bg-[#0F172A] text-white px-10 py-4.5 rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-xl hover:shadow-2xl active:scale-95 text-sm">
+                        Submit Another
+                    </button>
+                    <a href="/dispatcher.html" class="bg-white border border-[#E2E8F0] text-[#0F172A] px-10 py-4.5 rounded-2xl font-bold hover:bg-[#F1F5F9] transition-all text-sm flex items-center justify-center">
+                        Go to Dashboard
+                    </a>
+                </div>
             </div>
         </div>
 
         <p class="mt-16 text-center text-[13px] text-[#64748B] font-bold uppercase tracking-[0.15em] opacity-40">
-            Need immediate assistance? <a href="#" class="text-[#2563EB] hover:underline">Contact Support</a>
+            Need immediate assistance? <a href="mailto:support@repairhub.com" class="text-[#2563EB] hover:underline">Contact Support</a>
         </p>
     </div>
 
@@ -93,7 +98,7 @@
         const form = document.getElementById('requestForm');
         const overlay = document.getElementById('successOverlay');
 
-        form.onsubmit = async (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button');
             const originalContent = btn.innerHTML;
@@ -122,7 +127,7 @@
                     lucide.createIcons();
                 }, 2000);
             }
-        };
+        });
 
         function resetForm() {
             overlay.classList.add('translate-y-full');
@@ -132,6 +137,8 @@
             btn.innerHTML = '<i data-lucide="send" class="w-5 h-5"></i> Submit Request';
             lucide.createIcons();
         }
+
+        document.getElementById('resetFormBtn').addEventListener('click', resetForm);
     </script>
 </body>
 </html>

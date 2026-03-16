@@ -20,7 +20,8 @@ export const requestController = {
 
   list: (req, res) => {
     try {
-      const requests = queries.getRequests(req.query.status);
+      const { status, masterId } = req.query;
+      const requests = queries.getRequests(status, masterId);
       res.json(requests);
     } catch (err) {
       sendError(res, 500, 'Database error');

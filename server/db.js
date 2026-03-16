@@ -32,17 +32,28 @@ export const queries = {
     return stmt.run(clientName, phone, address, problemText);
   },
 
-  getRequests: (status) => {
+  getRequests: (status, masterId) => {
     let sql = `
       SELECT r.*, u.name as masterName 
       FROM requests r 
       LEFT JOIN users u ON r.masterId = u.id
     `;
     const params = [];
+    const conditions = [];
+    
     if (status) {
-      sql += ' WHERE r.status = ?';
+      conditions.push('r.status = ?');
       params.push(status);
     }
+    if (masterId) {
+      conditions.push('r.masterId = ?');
+      params.push(masterId);
+    }
+    
+    if (conditions.length > 0) {
+      sql += ' WHERE ' + conditions.join(' AND ');
+    }
+    
     sql += ' ORDER BY r.createdAt DESC';
     return db.prepare(sql).all(...params);
   },

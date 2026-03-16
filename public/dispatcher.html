@@ -45,20 +45,15 @@
                 </a>
                 <div class="flex gap-8 h-full text-[13px] font-semibold text-[#64748B]">
                     <a href="/dispatcher.html" class="flex items-center text-[#0F172A] border-b-2 border-[#2563EB] px-1 transition-all">Requests</a>
-                    <a href="#" class="flex items-center hover:text-[#0F172A] px-1 transition-all">Masters</a>
-                    <a href="#" class="flex items-center hover:text-[#0F172A] px-1 transition-all">Analytics</a>
+                    <a href="/master.html" class="flex items-center hover:text-[#0F172A] px-1 transition-all">Master View</a>
                 </div>
             </div>
             <div class="flex items-center gap-6">
                 <div class="relative group">
                     <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B] group-focus-within:text-[#2563EB] transition-colors"></i>
-                    <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 bg-[#F1F5F9] border border-transparent rounded-xl text-sm outline-none focus:bg-white focus:border-[#2563EB]/20 focus:ring-4 focus:ring-[#2563EB]/5 transition-all w-64">
+                    <input type="text" id="searchInput" placeholder="Search by client or problem..." class="pl-10 pr-4 py-2 bg-[#F1F5F9] border border-transparent rounded-xl text-sm outline-none focus:bg-white focus:border-[#2563EB]/20 focus:ring-4 focus:ring-[#2563EB]/5 transition-all w-64">
                 </div>
                 <div class="h-6 w-px bg-[#E2E8F0]"></div>
-                <button class="relative p-2 rounded-xl hover:bg-[#F1F5F9] transition-all text-[#64748B] hover:text-[#0F172A]">
-                    <i data-lucide="bell" class="w-5 h-5"></i>
-                    <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                </button>
                 <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 border-2 border-white shadow-sm"></div>
             </div>
         </div>
@@ -70,9 +65,15 @@
                 <h1 class="text-3xl font-extrabold tracking-tight text-[#0F172A] mb-2.5">Service Requests</h1>
                 <p class="text-[#64748B] font-medium opacity-80">Oversee operations and maintain service quality standards.</p>
             </div>
-            <div class="flex gap-4">
-                <div class="flex bg-white border border-[#E2E8F0] rounded-xl p-1 shadow-sm">
-                    <select id="statusFilter" onchange="loadRequests()" class="bg-transparent px-4 py-2 text-[13px] font-bold outline-none cursor-pointer text-[#0F172A]">
+            <div class="flex gap-3">
+                <div class="relative flex items-center bg-white border border-[#E2E8F0] rounded-xl shadow-sm hover:border-[#2563EB]/30 transition-all group">
+                    <select id="masterFilter" class="appearance-none bg-transparent pl-4 pr-10 py-2.5 text-[13px] font-bold outline-none cursor-pointer text-[#0F172A] min-w-[160px]">
+                        <option value="">All Masters</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="w-4 h-4 absolute right-3 text-[#64748B] pointer-events-none group-hover:text-[#2563EB] transition-colors"></i>
+                </div>
+                <div class="relative flex items-center bg-white border border-[#E2E8F0] rounded-xl shadow-sm hover:border-[#2563EB]/30 transition-all group">
+                    <select id="statusFilter" class="appearance-none bg-transparent pl-4 pr-10 py-2.5 text-[13px] font-bold outline-none cursor-pointer text-[#0F172A] min-w-[160px]">
                         <option value="">All Statuses</option>
                         <option value="new">New</option>
                         <option value="assigned">Assigned</option>
@@ -80,10 +81,11 @@
                         <option value="done">Done</option>
                         <option value="canceled">Canceled</option>
                     </select>
+                    <i data-lucide="chevron-down" class="w-4 h-4 absolute right-3 text-[#64748B] pointer-events-none group-hover:text-[#2563EB] transition-colors"></i>
                 </div>
-                <a href="/create.html" class="bg-[#2563EB] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#1d4ed8] transition-all shadow-xl shadow-blue-500/10 flex items-center gap-2.5">
+                <a href="/create.html" class="bg-[#2563EB] text-white px-6 py-2.5 rounded-xl font-bold hover:bg-[#1d4ed8] transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2.5 text-sm">
                     <i data-lucide="plus" class="w-4 h-4"></i>
-                    New Request
+                    Create Request
                 </a>
             </div>
         </div>
@@ -132,7 +134,7 @@
                         <h2 class="text-2xl font-bold text-[#0F172A] tracking-tight">Assign Technician</h2>
                         <p class="text-sm text-[#64748B] font-medium mt-1">Select a master for request <span id="modalRequestId" class="font-mono font-bold text-[#2563EB]"></span></p>
                     </div>
-                    <button onclick="hideAssignModal()" class="p-2 rounded-xl hover:bg-[#F1F5F9] transition-all text-[#64748B]">
+                    <button id="closeModalBtn" class="p-2 rounded-xl hover:bg-[#F1F5F9] transition-all text-[#64748B]">
                         <i data-lucide="x" class="w-6 h-6"></i>
                     </button>
                 </div>
@@ -142,8 +144,38 @@
                 </div>
             </div>
             <div class="bg-[#FBFBFC] p-8 flex justify-end gap-3 border-t border-[#E2E8F0]">
-                <button onclick="hideAssignModal()" class="px-8 py-3.5 rounded-xl font-bold text-[#64748B] hover:bg-[#E2E8F0] transition-all text-sm">Cancel</button>
+                <button id="cancelModalBtn" class="px-8 py-3.5 rounded-xl font-bold text-[#64748B] hover:bg-[#E2E8F0] transition-all text-sm">Cancel</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Cancel Modal -->
+    <div id="cancelModal" class="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all border border-[#E2E8F0]">
+            <div class="p-10 text-center">
+                <div class="w-20 h-20 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-8 text-red-600 border border-red-100">
+                    <i data-lucide="alert-triangle" class="w-10 h-10"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-[#0F172A] mb-2 tracking-tight">Cancel Request?</h2>
+                <p class="text-[#64748B] mb-10 text-[15px] font-medium opacity-80 leading-relaxed">Are you sure you want to cancel request <span id="cancelRequestIdDisplay" class="font-mono font-bold text-[#0F172A] bg-[#F1F5F9] px-2 py-0.5 rounded border border-[#E2E8F0]"></span>? This action cannot be undone.</p>
+                
+                <div class="flex flex-col gap-3">
+                    <button id="confirmCancelBtn" class="w-full bg-red-600 text-white py-4 rounded-xl font-bold hover:bg-red-700 transition-all shadow-xl shadow-red-500/10">
+                        Yes, Cancel Request
+                    </button>
+                    <button id="closeCancelModalBtn" class="w-full px-6 py-4 rounded-xl font-bold text-[#64748B] hover:bg-[#F1F5F9] transition-all text-sm">
+                        Keep Request
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="fixed bottom-10 right-10 z-[100] transform translate-y-20 opacity-0 transition-all duration-500 pointer-events-none">
+        <div class="bg-[#0F172A] text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-white/10 backdrop-blur-xl">
+            <div id="notificationIcon" class="w-8 h-8 rounded-lg flex items-center justify-center"></div>
+            <p id="notificationMessage" class="text-sm font-bold tracking-tight"></p>
         </div>
     </div>
 
@@ -152,6 +184,29 @@
         lucide.createIcons();
 
         let currentRequestId = null;
+        let cancelRequestId = null;
+
+        function showNotification(message, type = 'success') {
+            const toast = document.getElementById('notification');
+            const icon = document.getElementById('notificationIcon');
+            const msg = document.getElementById('notificationMessage');
+            
+            msg.innerText = message;
+            if (type === 'success') {
+                icon.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>';
+                icon.className = 'w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-400/10';
+            } else {
+                icon.innerHTML = '<i data-lucide="alert-circle" class="w-5 h-5 text-red-400"></i>';
+                icon.className = 'w-8 h-8 rounded-lg flex items-center justify-center bg-red-400/10';
+            }
+            
+            lucide.createIcons();
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 4000);
+        }
 
         function getStatusStyles(status) {
             switch(status) {
@@ -165,77 +220,106 @@
         }
 
         async function loadRequests() {
+            console.log('Loading requests with filters...');
             const loading = document.getElementById('loadingState');
             loading.classList.remove('hidden');
             
             const status = document.getElementById('statusFilter').value;
-            const requests = await API.getRequests(status);
-            const tbody = document.getElementById('requestTable');
-            const emptyState = document.getElementById('emptyState');
+            const masterId = document.getElementById('masterFilter').value;
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            const params = {};
+            if (status) params.status = status;
+            if (masterId) params.masterId = masterId;
+            
+            try {
+                let requests = await API.getRequests(params);
+                
+                if (searchTerm) {
+                    requests = requests.filter(req => 
+                        req.clientName.toLowerCase().includes(searchTerm) || 
+                        req.problemText.toLowerCase().includes(searchTerm) ||
+                        req.address.toLowerCase().includes(searchTerm)
+                    );
+                }
 
-            loading.classList.add('hidden');
+                const tbody = document.getElementById('requestTable');
+                const emptyState = document.getElementById('emptyState');
 
-            if (requests.length === 0) {
-                tbody.innerHTML = '';
-                emptyState.classList.remove('hidden');
-                return;
-            }
-            emptyState.classList.add('hidden');
+                loading.classList.add('hidden');
 
-            tbody.innerHTML = requests.map(req => `
-                <tr class="hover:bg-[#FBFBFC] transition-all group cursor-default">
-                    <td class="px-10 py-7 text-xs font-mono font-bold text-[#64748B] opacity-60">#${req.id}</td>
-                    <td class="px-10 py-7">
-                        <div class="font-bold text-[#0F172A] text-[15px] tracking-tight">${req.clientName}</div>
-                        <div class="text-xs text-[#64748B] mt-1 flex items-center gap-2 font-medium opacity-80">
-                            <i data-lucide="phone" class="w-3.5 h-3.5"></i>
-                            ${req.phone}
-                        </div>
-                    </td>
-                    <td class="px-10 py-7">
-                        <div class="text-[14px] text-[#0F172A] max-w-xs truncate font-bold tracking-tight">${req.problemText}</div>
-                        <div class="text-[12px] text-[#64748B] mt-1.5 flex items-center gap-2 font-medium opacity-70">
-                            <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
-                            ${req.address}
-                        </div>
-                    </td>
-                    <td class="px-10 py-7">
-                        <span class="px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-[0.1em] ${getStatusStyles(req.status)}">
-                            ${req.status.replace('_', ' ')}
-                        </span>
-                    </td>
-                    <td class="px-10 py-7">
-                        ${req.masterName ? `
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-xs font-bold text-[#2563EB] border border-[#E2E8F0] shadow-sm">
-                                    ${req.masterName.charAt(0).toUpperCase()}
+                if (!requests || requests.length === 0) {
+                    tbody.innerHTML = '';
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+                emptyState.classList.add('hidden');
+
+                tbody.innerHTML = requests.map(req => `
+                    <tr class="hover:bg-[#FBFBFC] transition-all group cursor-default">
+                        <td class="px-10 py-7 text-xs font-mono font-bold text-[#64748B] opacity-60">#${req.id}</td>
+                        <td class="px-10 py-7">
+                            <div class="font-bold text-[#0F172A] text-[15px] tracking-tight">${req.clientName}</div>
+                            <div class="text-xs text-[#64748B] mt-1 flex items-center gap-2 font-medium opacity-80">
+                                <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+                                ${req.phone}
+                            </div>
+                        </td>
+                        <td class="px-10 py-7">
+                            <div class="text-[14px] text-[#0F172A] max-w-xs truncate font-bold tracking-tight">${req.problemText}</div>
+                            <div class="text-[12px] text-[#64748B] mt-1.5 flex items-center gap-2 font-medium opacity-70">
+                                <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+                                ${req.address}
+                            </div>
+                        </td>
+                        <td class="px-10 py-7">
+                            <span class="px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-[0.1em] ${getStatusStyles(req.status)}">
+                                ${req.status.replace('_', ' ')}
+                            </span>
+                        </td>
+                        <td class="px-10 py-7">
+                            ${req.masterName ? `
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-xs font-bold text-[#2563EB] border border-[#E2E8F0] shadow-sm">
+                                        ${req.masterName.charAt(0).toUpperCase()}
+                                    </div>
+                                    <span class="text-[14px] font-bold text-[#0F172A] tracking-tight">${req.masterName}</span>
                                 </div>
-                                <span class="text-[14px] font-bold text-[#0F172A] tracking-tight">${req.masterName}</span>
+                            ` : `
+                                <div class="flex items-center gap-2.5 text-[#64748B]/30">
+                                    <i data-lucide="user-minus" class="w-4.5 h-4.5"></i>
+                                    <span class="text-xs font-bold uppercase tracking-widest italic">Pending</span>
+                                </div>
+                            `}
+                        </td>
+                        <td class="px-10 py-7 text-right">
+                            <div class="flex justify-end gap-2.5 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                                ${(req.status === 'new' || req.status === 'assigned') ? `
+                                    <button data-action="assign" data-id="${req.id}" class="p-3 rounded-xl bg-white text-[#2563EB] hover:bg-[#2563EB] hover:text-white transition-all border border-[#E2E8F0] hover:border-[#2563EB] shadow-sm" title="Assign">
+                                        <i data-lucide="user-plus" class="w-4.5 h-4.5"></i>
+                                    </button>
+                                ` : ''}
+                                ${req.status !== 'done' && req.status !== 'canceled' ? `
+                                    <button data-action="cancel" data-id="${req.id}" class="p-3 rounded-xl bg-white text-red-600 hover:bg-red-600 hover:text-white transition-all border border-[#E2E8F0] hover:border-red-600 shadow-sm" title="Cancel">
+                                        <i data-lucide="x-circle" class="w-4.5 h-4.5"></i>
+                                    </button>
+                                ` : ''}
                             </div>
-                        ` : `
-                            <div class="flex items-center gap-2.5 text-[#64748B]/30">
-                                <i data-lucide="user-minus" class="w-4.5 h-4.5"></i>
-                                <span class="text-xs font-bold uppercase tracking-widest italic">Pending</span>
-                            </div>
-                        `}
-                    </td>
-                    <td class="px-10 py-7 text-right">
-                        <div class="flex justify-end gap-2.5 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
-                            ${(req.status === 'new' || req.status === 'assigned') ? `
-                                <button onclick="showAssignModal(${req.id})" class="p-3 rounded-xl bg-white text-[#2563EB] hover:bg-[#2563EB] hover:text-white transition-all border border-[#E2E8F0] hover:border-[#2563EB] shadow-sm" title="Assign">
-                                    <i data-lucide="user-plus" class="w-4.5 h-4.5"></i>
-                                </button>
-                            ` : ''}
-                            ${req.status !== 'done' && req.status !== 'canceled' ? `
-                                <button onclick="cancelRequest(${req.id})" class="p-3 rounded-xl bg-white text-red-600 hover:bg-red-600 hover:text-white transition-all border border-[#E2E8F0] hover:border-red-600 shadow-sm" title="Cancel">
-                                    <i data-lucide="x-circle" class="w-4.5 h-4.5"></i>
-                                </button>
-                            ` : ''}
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-            lucide.createIcons();
+                        </td>
+                    </tr>
+                `).join('');
+                lucide.createIcons();
+            } catch (error) {
+                console.error('Error loading requests:', error);
+                loading.classList.add('hidden');
+            }
+        }
+
+        async function init() {
+            const masters = await API.getUsers('master');
+            const filter = document.getElementById('masterFilter');
+            filter.innerHTML += masters.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+            loadRequests();
         }
 
         async function showAssignModal(id) {
@@ -248,7 +332,7 @@
                 list.innerHTML = '<p class="text-[#64748B] italic py-4">No masters available.</p>';
             } else {
                 list.innerHTML = masters.map(m => `
-                    <button onclick="assignTo(${m.id})" class="w-full flex items-center gap-5 p-5 rounded-2xl border border-[#E2E8F0] hover:border-[#2563EB]/40 hover:bg-blue-50/20 transition-all group text-left">
+                    <button data-action="select-master" data-id="${m.id}" class="w-full flex items-center gap-5 p-5 rounded-2xl border border-[#E2E8F0] hover:border-[#2563EB]/40 hover:bg-blue-50/20 transition-all group text-left">
                         <div class="w-12 h-12 rounded-xl bg-[#F8FAFC] flex items-center justify-center font-extrabold text-[#64748B] group-hover:bg-[#2563EB] group-hover:text-white transition-all border border-[#E2E8F0] group-hover:border-[#2563EB] shadow-sm">
                             ${m.name.charAt(0).toUpperCase()}
                         </div>
@@ -274,20 +358,76 @@
 
         async function assignTo(masterId) {
             if (currentRequestId && masterId) {
-                await API.assignRequest(currentRequestId, masterId);
-                hideAssignModal();
-                loadRequests();
+                try {
+                    await API.assignRequest(currentRequestId, masterId);
+                    showNotification('Technician assigned successfully');
+                    hideAssignModal();
+                    loadRequests();
+                } catch (err) {
+                    showNotification(err.message, 'error');
+                }
             }
         }
 
-        async function cancelRequest(id) {
-            if (confirm('Are you sure you want to cancel this request?')) {
-                await API.cancelRequest(id);
-                loadRequests();
+        async function cancelRequest() {
+            if (cancelRequestId) {
+                try {
+                    await API.cancelRequest(cancelRequestId);
+                    showNotification('Request canceled');
+                    hideCancelModal();
+                    loadRequests();
+                } catch (err) {
+                    showNotification(err.message, 'error');
+                }
             }
         }
 
-        loadRequests();
+        function showCancelModal(id) {
+            cancelRequestId = id;
+            document.getElementById('cancelRequestIdDisplay').innerText = `#${id}`;
+            document.getElementById('cancelModal').classList.remove('hidden');
+            document.getElementById('cancelModal').classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function hideCancelModal() {
+            document.getElementById('cancelModal').classList.add('hidden');
+            document.getElementById('cancelModal').classList.remove('flex');
+            cancelRequestId = null;
+        }
+
+        // Event Listeners for Actions
+        document.getElementById('requestTable').addEventListener('click', (e) => {
+            const assignBtn = e.target.closest('[data-action="assign"]');
+            const cancelBtn = e.target.closest('[data-action="cancel"]');
+            
+            if (assignBtn) {
+                const id = assignBtn.getAttribute('data-id');
+                showAssignModal(id);
+            }
+            if (cancelBtn) {
+                const id = cancelBtn.getAttribute('data-id');
+                showCancelModal(id);
+            }
+        });
+
+        document.getElementById('masterList').addEventListener('click', (e) => {
+            const masterBtn = e.target.closest('[data-action="select-master"]');
+            if (masterBtn) {
+                const masterId = masterBtn.getAttribute('data-id');
+                assignTo(masterId);
+            }
+        });
+
+        document.getElementById('statusFilter').addEventListener('change', loadRequests);
+        document.getElementById('masterFilter').addEventListener('change', loadRequests);
+        document.getElementById('searchInput').addEventListener('input', loadRequests);
+        document.getElementById('closeModalBtn').addEventListener('click', hideAssignModal);
+        document.getElementById('cancelModalBtn').addEventListener('click', hideAssignModal);
+        document.getElementById('confirmCancelBtn').addEventListener('click', cancelRequest);
+        document.getElementById('closeCancelModalBtn').addEventListener('click', hideCancelModal);
+
+        init();
     </script>
 </body>
 </html>
