@@ -1,6 +1,7 @@
 # User Prompts
 
 This file contains a history of the prompts used by the user during this session.
+Общее затраченное время ~2ч времени
 
 ## Prompt 1
 Design architecture for a minimal web service:
